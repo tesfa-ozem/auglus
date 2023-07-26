@@ -2,7 +2,7 @@ from typing import Optional, List
 
 from sqlalchemy import or_, select, and_
 
-from app.user.models import User
+from app.models import User
 from app.user.schemas.user import LoginResponseSchema
 from core.db import Transactional, session
 from core.exceptions import (
