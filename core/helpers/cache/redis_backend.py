@@ -1,7 +1,7 @@
 import pickle
 from typing import Any
 
-import ujson
+import json
 
 from core.helpers.cache.base import BaseBackend
 from core.helpers.redis import redis
@@ -14,13 +14,13 @@ class RedisBackend(BaseBackend):
             return
 
         try:
-            return ujson.loads(result.decode("utf8"))
+            return json.loads(result.decode("utf8"))
         except UnicodeDecodeError:
             return pickle.loads(result)
 
     async def set(self, response: Any, key: str, ttl: int = 60) -> None:
         if isinstance(response, dict):
-            response = ujson.dumps(response)
+            response = json.dumps(response)
         elif isinstance(response, object):
             response = pickle.dumps(response)
 

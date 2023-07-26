@@ -16,11 +16,12 @@ class TokenHelper:
             },
             key=config.JWT_SECRET_KEY,
             algorithm=config.JWT_ALGORITHM,
-        ).decode("utf8")
+        )
         return token
 
     @staticmethod
     def decode(token: str) -> dict:
+        breakpoint()
         try:
             return jwt.decode(
                 token,
@@ -34,6 +35,7 @@ class TokenHelper:
 
     @staticmethod
     def decode_expired_token(token: str) -> dict:
+
         try:
             return jwt.decode(
                 token,

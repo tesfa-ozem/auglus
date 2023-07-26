@@ -40,7 +40,7 @@ async def get_user_list(
 )
 async def create_user(request: CreateUserRequestSchema):
     await UserService().create_user(**request.dict())
-    return {"email": request.email, "nickname": request.nickname}
+    return {"email": request.email, "user": request.user_name}
 
 
 @user_router.post(

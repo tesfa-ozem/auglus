@@ -12,9 +12,11 @@ from ..schemas import CurrentUser
 
 
 class AuthBackend(AuthenticationBackend):
+    
     async def authenticate(
         self, conn: HTTPConnection
     ) -> Tuple[bool, Optional[CurrentUser]]:
+        breakpoint()
         current_user = CurrentUser()
         authorization: str = conn.headers.get("Authorization")
         if not authorization:
