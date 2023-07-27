@@ -25,7 +25,7 @@ class SkillService:
         return result.scalars().all()
 
     @Transactional()
-    async def create_list(self, data: CreateSkillRequestSchema):
+    async def create_skill(self, data: CreateSkillRequestSchema):
         skill = Skill(name=data.name)
         session.add(skill)
         return GetSkillResponseSchema(id="1", name=data.name)
