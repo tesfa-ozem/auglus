@@ -3,10 +3,9 @@ from typing import Optional, List
 from sqlalchemy import or_, select, and_
 
 from app.models import User
-from app.user.schemas.user import LoginResponseSchema
+from app.schemas.user import LoginResponseSchema
 from core.db import Transactional, session
 from core.exceptions import (
-    PasswordDoesNotMatchException,
     DuplicateEmailOrUsernameException,
     UserNotFoundException,
 )
