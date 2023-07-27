@@ -1,5 +1,5 @@
 import datetime
-from typing import List
+from typing import List, Optional
 
 from sqlalchemy import ForeignKey
 from sqlalchemy.orm import mapped_column, Mapped, relationship
@@ -13,10 +13,10 @@ class Skill(Base, TimestampMixin):
     __tablename__ = "skills"
 
     id: Mapped[int] = mapped_column(primary_key=True, autoincrement=True)
-    name: Mapped[str]
-    professional: Mapped[List["Professional"]] = relationship("Professional", back_populates="skill")
-    task_id: Mapped[int] = mapped_column(ForeignKey("tasks.id"))
-    task: Mapped["Task"] = relationship("Task", back_populates="skill")
+    name: Mapped[str] = mapped_column(nullable=False, unique=True)
+    professional: Mapped[Optional[List["Professional"]]] = relationship("Professional", back_populates="skill")
+    task_id: Mapped[Optional[int]] = mapped_column(ForeignKey("tasks.id"))
+    task: Mapped[Optional["Task"]] = relationship("Task", back_populates="skill")
 
 
 class User(Base, TimestampMixin):
@@ -27,7 +27,7 @@ class User(Base, TimestampMixin):
     email: Mapped[str] = mapped_column(nullable=False, unique=True)
     user_name: Mapped[str] = mapped_column(nullable=False, unique=True)
     is_admin: Mapped[bool] = mapped_column(default=False)
-    professional: Mapped["Professional"] = relationship("Professional", back_populates="user")
+    professional: Mapped[Optional["Professional"]] = relationship("Professional", back_populates="user")
 
 
 class Professional(Base, TimestampMixin):
@@ -36,13 +36,13 @@ class Professional(Base, TimestampMixin):
     id: Mapped[int] = mapped_column(primary_key=True, autoincrement=True)
     first_name: Mapped[str]
     last_name: Mapped[str]
-    available: Mapped[bool]
+    available: Mapped[bool] = mapped_column(default=True)
     user_id: Mapped[int] = mapped_column(ForeignKey("users.id"))
     user: Mapped["User"] = relationship("User", back_populates="professional")
-    skill_id: Mapped[int] = mapped_column(ForeignKey("skills.id"))
-    skill: Mapped["Skill"] = relationship("Skill", back_populates="professional")
-    task_tracker_id: Mapped[int] = mapped_column(ForeignKey("task_trackers.id"))
-    task_tracker: Mapped["TaskTracker"] = relationship("TaskTracker", back_populates="professional")
+    skill_id: Mapped[Optional[int]] = mapped_column(ForeignKey("skills.id"))
+    skill: Mapped[Optional["Skill"]] = relationship("Skill", back_populates="professional")
+    task_tracker_id: Mapped[Optional[int]] = mapped_column(ForeignKey("task_trackers.id"))
+    task_tracker: Mapped[Optional[List["TaskTracker"]]] = relationship("TaskTracker", back_populates="professional")
 
 
 
@@ -52,9 +52,9 @@ class Task(Base, TimestampMixin):
     id: Mapped[int] = mapped_column(primary_key=True, autoincrement=True)
     name: Mapped[str]
     priority: Mapped[Priority]
-    task_tracker_id: Mapped[int] = mapped_column(ForeignKey("task_trackers.id"))
-    task_tracker: Mapped["TaskTracker"] = relationship("TaskTracker", back_populates="task")
-    skill: Mapped[List["Skill"]] = relationship("Skill", back_populates="task")
+    task_tracker_id: Mapped[Optional[int]] = mapped_column(ForeignKey("task_trackers.id"))
+    task_tracker: Mapped[Optional["TaskTracker"]] = relationship("TaskTracker", back_populates="task")
+    skill: Mapped[Optional[List["Skill"]]] = relationship("Skill", back_populates="task")
 
 
 class TaskTracker(Base, TimestampMixin):

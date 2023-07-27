@@ -2,8 +2,8 @@ from fastapi import APIRouter, Response
 
 from api.auth.request.auth import RefreshTokenRequest, VerifyTokenRequest
 from api.auth.response.auth import RefreshTokenResponse
-from app.auth.services.jwt import JwtService
-from app.user.schemas import ExceptionResponseSchema
+from app.services.jwt import JwtService
+from app.schemas import ExceptionResponseSchema
 
 auth_router = APIRouter()
 
