@@ -33,3 +33,9 @@ class TaskService:
         query = query.limit(limit)
         result = await session.execute(query)
         return result.scalars().unique()
+
+    async def get_next_task(self):
+        query = select(Task)
+        query = query.order_by(Task.priority.desc(), Task.created_at)
+        result = await session.execute(query)
+        return result.scalars().first()

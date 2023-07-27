@@ -35,7 +35,6 @@ async def get_user_list(
 
 @user_router.post(
     "",
-    response_model=CreateUserResponseSchema,
     responses={"400": {"model": ExceptionResponseSchema}},
 )
 async def create_user(request: CreateUserRequestSchema):
