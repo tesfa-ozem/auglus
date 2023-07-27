@@ -15,13 +15,22 @@ task_skills_table = Table(
     Column("skill_id", Integer, ForeignKey("skills.id"), primary_key=True),
 )
 
+professional_skills_table = Table(
+    "professional_skills",
+    Base.metadata,
+    Column("professional_id", Integer, ForeignKey("professionals.id"), primary_key=True),
+    Column("skill_id", Integer, ForeignKey("skills.id"), primary_key=True),
+)
+
 
 class Skill(Base, TimestampMixin):
     __tablename__ = "skills"
 
     id: Mapped[int] = mapped_column(primary_key=True, autoincrement=True)
     name: Mapped[str] = mapped_column(nullable=False, unique=True)
-    professional: Mapped[Optional[List["Professional"]]] = relationship("Professional", back_populates="skill")
+    professional: Mapped[Optional[List["Professional"]]] = relationship("Professional",
+                                                                         secondary=professional_skills_table,
+                                                                         back_populates="skill")
     task_id: Mapped[Optional[int]] = mapped_column(ForeignKey("tasks.id"))
     task: Mapped[Optional["Task"]] = relationship("Task", secondary=task_skills_table, back_populates="skill")
 
@@ -46,8 +55,8 @@ class Professional(Base, TimestampMixin):
     available: Mapped[bool] = mapped_column(default=True)
     user_id: Mapped[int] = mapped_column(ForeignKey("users.id"), unique=True)
     user: Mapped["User"] = relationship("User", back_populates="professional")
-    skill_id: Mapped[Optional[int]] = mapped_column(ForeignKey("skills.id"))
-    skill: Mapped[Optional["Skill"]] = relationship("Skill", back_populates="professional")
+    skill: Mapped[Optional[List["Skill"]]] = relationship("Skill", secondary=professional_skills_table,
+                                                    back_populates="professional")
     task_tracker_id: Mapped[Optional[int]] = mapped_column(ForeignKey("task_trackers.id"))
     task_tracker: Mapped[Optional[List["TaskTracker"]]] = relationship("TaskTracker", back_populates="professional")
 
