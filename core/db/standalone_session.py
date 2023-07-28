@@ -1,3 +1,4 @@
+# -*- coding: utf-8 -*-
 from uuid import uuid4
 
 from .session import session, set_session_context, reset_session_context

@@ -1,3 +1,4 @@
+# -*- coding: utf-8 -*-
 import os
 
 from pydantic_settings import BaseSettings
@@ -8,8 +9,8 @@ class Config(BaseSettings):
     DEBUG: bool = True
     APP_HOST: str = "0.0.0.0"
     APP_PORT: int = 8000
-    WRITER_DB_URL: str = f"postgresql://jkaub:jkaub@localhost/stations"
-    READER_DB_URL: str = f"postgresql://jkaub:jkaub@localhost/stations"
+    WRITER_DB_URL: str = "postgresql://jkaub:jkaub@localhost/stations"
+    READER_DB_URL: str = "postgresql://jkaub:jkaub@localhost/stations"
     JWT_SECRET_KEY: str = "fastapi"
     JWT_ALGORITHM: str = "HS256"
     CELERY_BROKER_URL: str = "amqp://user:bitnami@localhost:5672/"
@@ -19,21 +20,21 @@ class Config(BaseSettings):
 
 
 class DevelopmentConfig(Config):
-    WRITER_DB_URL: str = f"postgresql://tesfa:admin@localhost/taskdb"
-    READER_DB_URL: str = f"postgresql://tesfa:admin@localhost/taskdb"
+    WRITER_DB_URL: str = "postgresql://tesfa:admin@localhost/taskdb"
+    READER_DB_URL: str = "postgresql://tesfa:admin@localhost/taskdb"
     REDIS_HOST: str = "redis"
     REDIS_PORT: int = 6379
 
 
 class LocalConfig(Config):
-    WRITER_DB_URL: str = f"postgresql+asyncpg://tesfa:admin@localhost/taskdb"
-    READER_DB_URL: str = f"postgresql+asyncpg://tesfa:admin@localhost/taskdb"
+    WRITER_DB_URL: str = "postgresql+asyncpg://tesfa:admin@localhost/taskdb"
+    READER_DB_URL: str = "postgresql+asyncpg://tesfa:admin@localhost/taskdb"
 
 
 class ProductionConfig(Config):
     DEBUG: bool = False
-    WRITER_DB_URL: str = f"mysql+aiomysql://fastapi:fastapi@localhost:3306/prod"
-    READER_DB_URL: str = f"mysql+aiomysql://fastapi:fastapi@localhost:3306/prod"
+    WRITER_DB_URL: str = "mysql+aiomysql://fastapi:fastapi@localhost:3306/prod"
+    READER_DB_URL: str = "mysql+aiomysql://fastapi:fastapi@localhost:3306/prod"
 
 
 def get_config():

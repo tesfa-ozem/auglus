@@ -1,11 +1,13 @@
+# -*- coding: utf-8 -*-
 from typing import Optional, List, ForwardRef
 
-from pydantic import BaseModel, Field
+from pydantic import BaseModel
 
 from app.enums.task import Priority
 
 TaskSchema = ForwardRef("TaskSchema")
 SkillSchema = ForwardRef("SkillSchema")
+
 
 class SkillSchema(BaseModel):
     id: int
@@ -13,6 +15,7 @@ class SkillSchema(BaseModel):
 
     class Config:
         orm_mode = True
+
 
 # class Skill(BaseModel):
 #     id: int

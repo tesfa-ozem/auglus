@@ -1,3 +1,4 @@
+# -*- coding: utf-8 -*-
 from functools import wraps
 from typing import Type
 
@@ -10,7 +11,9 @@ class CacheManager:
         self.backend = None
         self.key_maker = None
 
-    def init(self, backend: Type[BaseBackend], key_maker: Type[BaseKeyMaker]) -> None:
+    def init(
+        self, backend: Type[BaseBackend], key_maker: Type[BaseKeyMaker]
+    ) -> None:
         self.backend = backend
         self.key_maker = key_maker
 

@@ -1,3 +1,4 @@
+# -*- coding: utf-8 -*-
 from datetime import datetime, timedelta
 
 import jwt
@@ -21,7 +22,6 @@ class TokenHelper:
 
     @staticmethod
     def decode(token: str) -> dict:
-        breakpoint()
         try:
             return jwt.decode(
                 token,
@@ -35,7 +35,6 @@ class TokenHelper:
 
     @staticmethod
     def decode_expired_token(token: str) -> dict:
-
         try:
             return jwt.decode(
                 token,

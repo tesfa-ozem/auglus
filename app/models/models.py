@@ -1,3 +1,4 @@
+# -*- coding: utf-8 -*-
 import datetime
 from typing import List, Optional
 
@@ -18,7 +19,12 @@ task_skills_table = Table(
 professional_skills_table = Table(
     "professional_skills",
     Base.metadata,
-    Column("professional_id", Integer, ForeignKey("professionals.id"), primary_key=True),
+    Column(
+        "professional_id",
+        Integer,
+        ForeignKey("professionals.id"),
+        primary_key=True,
+    ),
     Column("skill_id", Integer, ForeignKey("skills.id"), primary_key=True),
 )
 
@@ -28,11 +34,15 @@ class Skill(Base, TimestampMixin):
 
     id: Mapped[int] = mapped_column(primary_key=True, autoincrement=True)
     name: Mapped[str] = mapped_column(nullable=False, unique=True)
-    professional: Mapped[Optional[List["Professional"]]] = relationship("Professional",
-                                                                         secondary=professional_skills_table,
-                                                                         back_populates="skill")
+    professional: Mapped[Optional[List["Professional"]]] = relationship(
+        "Professional",
+        secondary=professional_skills_table,
+        back_populates="skill",
+    )
     task_id: Mapped[Optional[int]] = mapped_column(ForeignKey("tasks.id"))
-    task: Mapped[Optional["Task"]] = relationship("Task", secondary=task_skills_table, back_populates="skill")
+    task: Mapped[Optional["Task"]] = relationship(
+        "Task", secondary=task_skills_table, back_populates="skill"
+    )
 
 
 class User(Base, TimestampMixin):
@@ -43,7 +53,9 @@ class User(Base, TimestampMixin):
     email: Mapped[str] = mapped_column(nullable=False, unique=True)
     user_name: Mapped[str] = mapped_column(nullable=False, unique=True)
     is_admin: Mapped[bool] = mapped_column(default=False)
-    professional: Mapped[Optional["Professional"]] = relationship("Professional", back_populates="user")
+    professional: Mapped[Optional["Professional"]] = relationship(
+        "Professional", back_populates="user"
+    )
 
 
 class Professional(Base, TimestampMixin):
@@ -55,10 +67,17 @@ class Professional(Base, TimestampMixin):
     available: Mapped[bool] = mapped_column(default=True)
     user_id: Mapped[int] = mapped_column(ForeignKey("users.id"), unique=True)
     user: Mapped["User"] = relationship("User", back_populates="professional")
-    skill: Mapped[Optional[List["Skill"]]] = relationship("Skill", secondary=professional_skills_table,
-                                                    back_populates="professional")
-    task_tracker_id: Mapped[Optional[int]] = mapped_column(ForeignKey("task_trackers.id"))
-    task_tracker: Mapped[Optional[List["TaskTracker"]]] = relationship("TaskTracker", back_populates="professional")
+    skill: Mapped[Optional[List["Skill"]]] = relationship(
+        "Skill",
+        secondary=professional_skills_table,
+        back_populates="professional",
+    )
+    task_tracker_id: Mapped[Optional[int]] = mapped_column(
+        ForeignKey("task_trackers.id")
+    )
+    task_tracker: Mapped[Optional[List["TaskTracker"]]] = relationship(
+        "TaskTracker", back_populates="professional"
+    )
 
 
 class Task(Base, TimestampMixin):
@@ -67,9 +86,15 @@ class Task(Base, TimestampMixin):
     id: Mapped[int] = mapped_column(primary_key=True, autoincrement=True)
     name: Mapped[str]
     priority: Mapped[Priority]
-    task_tracker_id: Mapped[Optional[int]] = mapped_column(ForeignKey("task_trackers.id"))
-    task_tracker: Mapped[Optional["TaskTracker"]] = relationship("TaskTracker", back_populates="task")
-    skill: Mapped[Optional[List["Skill"]]] = relationship("Skill", secondary=task_skills_table, back_populates="task")
+    task_tracker_id: Mapped[Optional[int]] = mapped_column(
+        ForeignKey("task_trackers.id")
+    )
+    task_tracker: Mapped[Optional["TaskTracker"]] = relationship(
+        "TaskTracker", back_populates="task"
+    )
+    skill: Mapped[Optional[List["Skill"]]] = relationship(
+        "Skill", secondary=task_skills_table, back_populates="task"
+    )
     status: Mapped[Status] = mapped_column(default=Status.NEW)
 
 
@@ -77,7 +102,9 @@ class TaskTracker(Base, TimestampMixin):
     __tablename__ = "task_trackers"
 
     id: Mapped[int] = mapped_column(primary_key=True, autoincrement=True)
-    start_time: Mapped[datetime.datetime]
-    end_date: Mapped[datetime.datetime]
+    start_time: Mapped[Optional[datetime.datetime]]
+    end_date: Mapped[Optional[datetime.datetime]]
     task: Mapped["Task"] = relationship("Task", back_populates="task_tracker")
-    professional: Mapped["Professional"] = relationship("Professional", back_populates="task_tracker")
+    professional: Mapped["Professional"] = relationship(
+        "Professional", back_populates="task_tracker"
+    )

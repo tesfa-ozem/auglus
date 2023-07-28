@@ -1,3 +1,4 @@
+# -*- coding: utf-8 -*-
 from app.schemas.jwt import RefreshTokenSchema
 from core.exceptions.token import DecodeTokenException
 from core.utils.token_helper import TokenHelper

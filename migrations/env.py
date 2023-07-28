@@ -1,3 +1,4 @@
+# -*- coding: utf-8 -*-
 import asyncio
 import os
 import sys
@@ -71,7 +72,9 @@ async def run_migrations_online():
     In this scenario we need to create an Engine
     and associate a connection with the context.
     """
-    connectable = create_async_engine(config.WRITER_DB_URL, poolclass=pool.NullPool)
+    connectable = create_async_engine(
+        config.WRITER_DB_URL, poolclass=pool.NullPool
+    )
 
     async with connectable.connect() as connection:
         await connection.run_sync(do_run_migrations)

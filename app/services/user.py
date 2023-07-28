@@ -1,3 +1,4 @@
+# -*- coding: utf-8 -*-
 from typing import Optional, List
 
 from sqlalchemy import or_, select, and_
@@ -41,7 +42,9 @@ class UserService:
         # if password1 != password2:
         #     raise PasswordDoesNotMatchException
 
-        query = select(User).where(or_(User.email == email, User.user_name == user_name))
+        query = select(User).where(
+            or_(User.email == email, User.user_name == user_name)
+        )
         result = await session.execute(query)
         is_exist = result.scalars().first()
         if is_exist:

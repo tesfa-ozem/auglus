@@ -1,3 +1,4 @@
+# -*- coding: utf-8 -*-
 from contextvars import ContextVar, Token
 from typing import Union
 

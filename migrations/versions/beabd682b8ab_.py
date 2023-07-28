@@ -1,3 +1,4 @@
+# -*- coding: utf-8 -*-
 """empty message
 
 Revision ID: beabd682b8ab
@@ -10,8 +11,8 @@ import sqlalchemy as sa
 
 
 # revision identifiers, used by Alembic.
-revision = 'beabd682b8ab'
-down_revision = '53817c6797eb'
+revision = "beabd682b8ab"
+down_revision = "53817c6797eb"
 branch_labels = None
 depends_on = None
 

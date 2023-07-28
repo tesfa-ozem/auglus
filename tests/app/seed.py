@@ -1,3 +1,4 @@
+# -*- coding: utf-8 -*-
 import asyncio
 import datetime
 from app.models import Skill, User, Professional, Task, TaskTracker
@@ -8,7 +9,17 @@ from core.db import Transactional, session, standalone_session
 @standalone_session
 async def seed_skills():
     # Seed the Skill table
-    skills_data = ["Python", "Java", "SQL", "HTML", "CSS", "JavaScript", "C++", "React", "Node.js"]
+    skills_data = [
+        "Python",
+        "Java",
+        "SQL",
+        "HTML",
+        "CSS",
+        "JavaScript",
+        "C++",
+        "React",
+        "Node.js",
+    ]
     skills = [Skill(name=skill) for skill in skills_data]
     session.add_all(skills)
 
@@ -17,9 +28,21 @@ async def seed_skills():
 async def seed_users():
     # Seed the User table
     users_data = [
-        {"email": "user1@example.com", "user_name": "user1", "password": "user1password"},
-        {"email": "user2@example.com", "user_name": "user2", "password": "user2password"},
-        {"email": "user3@example.com", "user_name": "user3", "password": "user3password"},
+        {
+            "email": "user1@example.com",
+            "user_name": "user1",
+            "password": "user1password",
+        },
+        {
+            "email": "user2@example.com",
+            "user_name": "user2",
+            "password": "user2password",
+        },
+        {
+            "email": "user3@example.com",
+            "user_name": "user3",
+            "password": "user3password",
+        },
         # Add more user data here
     ]
 
@@ -37,7 +60,10 @@ async def seed_professionals():
         # Add more professional data here
     ]
 
-    professionals = [Professional(**professional_data) for professional_data in professionals_data]
+    professionals = [
+        Professional(**professional_data)
+        for professional_data in professionals_data
+    ]
     session.add_all(professionals)
 
 
@@ -46,8 +72,16 @@ async def seed_tasks():
     # Seed the Task table
     tasks_data = [
         {"name": "Task 1", "priority": Priority.LOW, "status": Status.NEW},
-        {"name": "Task 2", "priority": Priority.MEDIUM, "status": Status.IN_PROGRESS},
-        {"name": "Task 3", "priority": Priority.HIGH, "status": Status.COMPLETED},
+        {
+            "name": "Task 2",
+            "priority": Priority.MEDIUM,
+            "status": Status.IN_PROGRESS,
+        },
+        {
+            "name": "Task 3",
+            "priority": Priority.HIGH,
+            "status": Status.COMPLETED,
+        },
         # Add more task data here
     ]
 
