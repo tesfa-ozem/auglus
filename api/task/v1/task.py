@@ -36,4 +36,5 @@ async def fetch_tasks():
 @task_router.patch("/{task_id}", )
 async def update_tasks(task_id: int, request: UpdateTaskSchema):
     task_service = TaskService()
-    response = await task_service.update_task(task_id=task_id, args=request.model_dump())
+    response = await task_service.update_task(task_id=task_id, args=request.model_dump(exclude_unset=True))
+    return response

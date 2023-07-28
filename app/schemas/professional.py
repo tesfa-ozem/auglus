@@ -25,3 +25,10 @@ class GetProfessionalResponseSchema(BaseModel):
 
     class Config:
         orm_mode = True
+
+
+class UpdateProfessionalSchema(BaseModel):
+    first_name: Optional[str] = None
+    last_name: Optional[str] = None
+    available: Optional[bool] = None
+    skill: Optional[List[int]] = None

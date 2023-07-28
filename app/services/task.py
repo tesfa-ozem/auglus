@@ -52,13 +52,13 @@ class TaskService:
         if not task:
             raise HTTPException(status_code=404, detail="Skill not found")
 
-        if args.get('skill',None):
+        if args.get('skill', None):
             query = select(Skill).where(Skill.id.in_(args.get('skill')))
             result = await session.execute(query)
             skills_list = result.scalars().all()
             task.skill = skills_list
         del args['skill']
-        # task.name = args['name']
+
         for key, value in args.items():
             setattr(task, key, value)
 

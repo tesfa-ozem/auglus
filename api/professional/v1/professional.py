@@ -7,7 +7,7 @@ from fastapi.exceptions import HTTPException
 from app.schemas import ExceptionResponseSchema
 from app.schemas.professional import (
     CreateProfessionalRequestSchema,
-    GetProfessionalResponseSchema,
+    GetProfessionalResponseSchema, UpdateProfessionalSchema,
 )
 from app.services.professional import ProfessionalService
 from core.fastapi.dependencies import PermissionDependency, AllowAll
@@ -41,3 +41,10 @@ async def fetch_professionals():
         # You can return a custom error response
         error_msg = "Validation error: " + str(e)
         raise HTTPException(status_code=422, detail=error_msg)
+
+
+@professional_router.patch("/{professional_id}",)
+async def update_professionals(professional_id:int, request: UpdateProfessionalSchema):
+    professional_service = ProfessionalService()
+    response = await professional_service.update_professional(professional_id,request.model_dump(exclude_unset=True))
+    return response
