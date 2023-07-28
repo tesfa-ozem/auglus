@@ -16,11 +16,11 @@ class ProfessionalService:
 
     @Transactional()
     async def create_user(
-            self,
-            first_name: str,
-            last_name: str,
-            user_id: int,
-            skill_ids: List[int],
+        self,
+        first_name: str,
+        last_name: str,
+        user_id: int,
+        skill_ids: List[int],
     ):
         try:
             query = select(Skill).where(Skill.id.in_(skill_ids))
@@ -38,9 +38,9 @@ class ProfessionalService:
             raise Exception(f"An unexpected error occurred: {str(e)}")
 
     async def get_professional_list(
-            self,
-            limit: int = 12,
-            prev: Optional[int] = None,
+        self,
+        limit: int = 12,
+        prev: Optional[int] = None,
     ) -> List[Professional]:
         query = select(Professional).options(joinedload(Professional.skill))
         if prev:
@@ -55,22 +55,27 @@ class ProfessionalService:
         return result.scalars().unique()
 
     async def get_available_professionals(
-            self, skill: List[int]
+        self, skill: List[int]
     ) -> List[Professional]:
         query = select(Professional)
-        query = query.join(Professional.skill).filter(Skill.id.in_(skill),).order_by(Professional.created_at.asc())
-        qualified_query = (
-            query.options(
-                joinedload(Professional.task_tracker),
-                joinedload(Professional.skill)
-            ).join(Professional.skill)
-
+        query = (
+            query.join(Professional.skill)
+            .filter(
+                Skill.id.in_(skill),
+            )
+            .order_by(Professional.created_at.asc())
         )
+        qualified_query = query.options(
+            joinedload(Professional.task_tracker),
+            joinedload(Professional.skill),
+        ).join(Professional.skill)
         available_query = qualified_query.filter(Professional.available)
         result = await session.execute(available_query)
         return result.scalars().unique().all()
 
-    async def process_professionals(self, professionals: List[Professional]) -> List[Dict[Professional, float]]:
+    async def process_professionals(
+        self, professionals: List[Professional]
+    ) -> List[Dict[Professional, float]]:
         """
         - This function sorts the professionals from oldest to newest
         - It also gets the workload of each professional
@@ -82,7 +87,9 @@ class ProfessionalService:
 
         for i in professionals:
             if i.task_tracker:
-                work_load_weight = len(i.task_tracker.all()) / (datetime.datetime.now() - i.created_at)
+                work_load_weight = len(i.task_tracker.all()) / (
+                    datetime.datetime.now() - i.created_at
+                )
                 data.append((i, work_load_weight))
             else:
                 data.append((i, 0))

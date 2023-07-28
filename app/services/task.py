@@ -8,13 +8,12 @@ from app.enums.task import Priority, Status
 from app.models import Skill, Task, TaskTracker
 from app.services.professional import ProfessionalService
 from core.db import Transactional, session
-from collections import Counter
 
 
 class TaskService:
     @Transactional()
     async def create_task(
-            self, name: str, priority: Priority, skills: Optional[List[int]] = None
+        self, name: str, priority: Priority, skills: Optional[List[int]] = None
     ):
         if len(skills) > 0:
             query = select(Skill).where(Skill.id.in_(skills))
@@ -27,9 +26,9 @@ class TaskService:
         await self.assign_task()
 
     async def get_tasks_list(
-            self,
-            limit: int = 12,
-            prev: Optional[int] = None,
+        self,
+        limit: int = 12,
+        prev: Optional[int] = None,
     ) -> List[Task]:
         query = select(Task).options(joinedload(Task.skill))
         if prev:
@@ -43,11 +42,12 @@ class TaskService:
         return result.scalars().unique()
 
     async def get_next_tasks(self):
-
         query = select(Task)
-        query = query.options(
-            joinedload(Task.skill)
-        ).order_by(Task.created_at).filter(Task.status == Status.NEW)
+        query = (
+            query.options(joinedload(Task.skill))
+            .order_by(Task.created_at)
+            .filter(Task.status == Status.NEW)
+        )
         result = await session.execute(query)
         tasks = result.scalars().unique().all()
         tasks_queue = []
@@ -64,14 +64,20 @@ class TaskService:
 
         for t in tasks:
             skill_ids = [i.id for i in t.skill]
-            professionals = await professional_service.get_available_professionals(skill_ids)
-            processed = await professional_service.process_professionals(professionals)
+            professionals = (
+                await professional_service.get_available_professionals(
+                    skill_ids
+                )
+            )
+            processed = await professional_service.process_professionals(
+                professionals
+            )
             sorted_professionals = sorted(processed, key=lambda x: x[1])
-              # Extract the Professional object from the tuple
+            # Extract the Professional object from the tuple
             # Assign for only professionals with required skills
             for p_tuple in sorted_professionals:
                 professional = p_tuple[0]
-            # if all(skill in t.skill for skill in professional.skill):
+                # if all(skill in t.skill for skill in professional.skill):
                 t.professional = professional
                 t.status = Status.IN_PROGRESS
                 professional.available = False

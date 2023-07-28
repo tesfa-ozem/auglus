@@ -18,8 +18,11 @@ async def test_getting_next_task():
 @standalone_session
 async def test_getting_available_professionals():
     professional_service = ProfessionalService()
-    result = await professional_service.get_available_professionals(skill_ids=[1, 2])
+    result = await professional_service.get_available_professionals(
+        skill_ids=[1, 2]
+    )
     assert result
+
 
 @pytest.mark.asyncio
 @standalone_session

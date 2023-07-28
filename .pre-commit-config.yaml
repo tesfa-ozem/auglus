@@ -58,4 +58,4 @@ repos:
 #  #       additional_dependencies: [tokenize-rt==3.2.0]
 #
 #
-## exclude: '^venv/'
+# exclude: '^venv/'
