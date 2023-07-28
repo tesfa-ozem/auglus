@@ -25,4 +25,4 @@ async def test_getting_available_professionals():
 @standalone_session
 async def test_assign_task():
     task_service = TaskService()
-    await task_service.assign_task([2])
+    await task_service.assign_task()

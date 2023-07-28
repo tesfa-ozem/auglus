@@ -3,7 +3,7 @@ from typing import Optional, List, ForwardRef
 
 from pydantic import BaseModel
 
-from app.enums.task import Priority
+from app.enums.task import Priority, Status
 
 TaskSchema = ForwardRef("TaskSchema")
 SkillSchema = ForwardRef("SkillSchema")
@@ -36,6 +36,7 @@ class GetTaskResponseSchema(BaseModel):
     name: str
     priority: Priority
     skill: Optional[List[SkillSchema]] = None
+    status: Status
 
     class Config:
         from_attributes = True
