@@ -1,6 +1,7 @@
 # -*- coding: utf-8 -*-
 from typing import Optional, List
 
+from fastapi import HTTPException
 from sqlalchemy import select, case
 from sqlalchemy.orm import joinedload, aliased
 
@@ -13,7 +14,7 @@ from core.db import Transactional, session
 class TaskService:
     @Transactional()
     async def create_task(
-        self, name: str, priority: Priority, skills: Optional[List[int]] = None
+            self, name: str, priority: Priority, skills: Optional[List[int]] = None
     ):
         if len(skills) > 0:
             query = select(Skill).where(Skill.id.in_(skills))
@@ -26,9 +27,9 @@ class TaskService:
         await self.assign_task()
 
     async def get_tasks_list(
-        self,
-        limit: int = 12,
-        prev: Optional[int] = None,
+            self,
+            limit: int = 12,
+            prev: Optional[int] = None,
     ) -> List[Task]:
         query = select(Task).options(joinedload(Task.skill))
         if prev:
@@ -40,6 +41,28 @@ class TaskService:
         query = query.limit(limit)
         result = await session.execute(query)
         return result.scalars().unique()
+
+    @Transactional()
+    async def update_task(self, task_id: int, args):
+        if not task_id:
+            raise Exception("No id provided")
+        query = select(Task).options(joinedload(Task.skill)).where(Task.id == task_id)
+        result = await session.execute(query)
+        task = result.scalars().first()
+        if not task:
+            raise HTTPException(status_code=404, detail="Skill not found")
+
+        if args.get('skill',None):
+            query = select(Skill).where(Skill.id.in_(args.get('skill')))
+            result = await session.execute(query)
+            skills_list = result.scalars().all()
+            task.skill = skills_list
+        del args['skill']
+        # task.name = args['name']
+        for key, value in args.items():
+            setattr(task, key, value)
+
+        return task
 
     async def get_next_tasks(self):
         query = select(Task)
