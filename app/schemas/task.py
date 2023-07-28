@@ -40,3 +40,10 @@ class GetTaskResponseSchema(BaseModel):
 
     class Config:
         from_attributes = True
+
+
+class UpdateTaskSchema(BaseModel):
+    name: Optional[str] = None
+    priority: Optional[Priority] = None
+    skill: Optional[List[int]] = None
+    status: Optional[Status] = None

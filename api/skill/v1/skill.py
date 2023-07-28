@@ -4,7 +4,7 @@ from typing import List
 from fastapi import APIRouter, Response, Depends
 
 from app.schemas import ExceptionResponseSchema
-from app.schemas.skill import CreateSkillRequestSchema, GetSkillResponseSchema
+from app.schemas.skill import CreateSkillRequestSchema, GetSkillResponseSchema, UpdateSkillSchema
 from app.services.skill import SkillService
 from core.fastapi.dependencies import PermissionDependency, AllowAll
 
@@ -30,3 +30,9 @@ async def create_skill(request: CreateSkillRequestSchema):
 async def fetch_skills():
     skill_service = SkillService()
     return await skill_service.get_skill_list()
+
+
+@skill_router.patch("/{skill_id}")
+async def update_skill(skill_id: int, request: UpdateSkillSchema):
+    skill_service = SkillService()
+    return await skill_service.update_skills(skill_id=skill_id, args=request.dict())

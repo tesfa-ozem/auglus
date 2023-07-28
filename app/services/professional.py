@@ -2,6 +2,7 @@
 import datetime
 from typing import Optional, List, Dict
 
+from fastapi import HTTPException
 from sqlalchemy import select
 from sqlalchemy.orm import joinedload
 
@@ -72,6 +73,28 @@ class ProfessionalService:
         available_query = qualified_query.filter(Professional.available)
         result = await session.execute(available_query)
         return result.scalars().unique().all()
+
+    @Transactional()
+    async def update_professional(self, professional_id: int, args):
+        if not professional_id:
+            raise Exception("No id provided")
+        query = select(Professional).options(joinedload(Professional.skill)).where(Professional.id == professional_id)
+        result = await session.execute(query)
+        professional = result.scalars().first()
+        if not professional:
+            raise HTTPException(status_code=404, detail="Skill not found")
+
+        if args.get('skill', None):
+            query = select(Skill).where(Skill.id.in_(args.get('skill')))
+            result = await session.execute(query)
+            skills_list = result.scalars().all()
+            professional.skill = skills_list
+        del args['skill']
+        # task.name = args['name']
+        for key, value in args.items():
+            setattr(professional, key, value)
+
+        return professional
 
     async def process_professionals(
         self, professionals: List[Professional]

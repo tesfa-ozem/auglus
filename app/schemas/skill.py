@@ -12,3 +12,7 @@ class GetSkillResponseSchema(BaseModel):
 
     class Config:
         orm_mode = True
+
+
+class UpdateSkillSchema(CreateSkillRequestSchema):
+    ...

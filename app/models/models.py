@@ -12,8 +12,8 @@ from core.db.mixins import TimestampMixin
 task_skills_table = Table(
     "task_skills",
     Base.metadata,
-    Column("task_id", Integer, ForeignKey("tasks.id"), primary_key=True),
-    Column("skill_id", Integer, ForeignKey("skills.id"), primary_key=True),
+    Column("task_id", Integer, ForeignKey("tasks.id", ondelete='SET NULL', onupdate='CASCADE'), primary_key=True),
+    Column("skill_id", Integer, ForeignKey("skills.id", ondelete='SET NULL', onupdate='CASCADE'), primary_key=True),
 )
 
 professional_skills_table = Table(
@@ -22,10 +22,11 @@ professional_skills_table = Table(
     Column(
         "professional_id",
         Integer,
-        ForeignKey("professionals.id"),
+        ForeignKey("professionals.id", ondelete='SET NULL', onupdate='CASCADE'),
         primary_key=True,
+
     ),
-    Column("skill_id", Integer, ForeignKey("skills.id"), primary_key=True),
+    Column("skill_id", Integer, ForeignKey("skills.id", ondelete='SET NULL', onupdate='CASCADE'), primary_key=True),
 )
 
 
@@ -73,7 +74,7 @@ class Professional(Base, TimestampMixin):
         back_populates="professional",
     )
     task_tracker_id: Mapped[Optional[int]] = mapped_column(
-        ForeignKey("task_trackers.id")
+        ForeignKey("task_trackers.id"),
     )
     task_tracker: Mapped[Optional[List["TaskTracker"]]] = relationship(
         "TaskTracker", back_populates="professional"
