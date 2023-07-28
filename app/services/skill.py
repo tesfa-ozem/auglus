@@ -1,6 +1,7 @@
-from typing import Optional, List, Any, Sequence
+# -*- coding: utf-8 -*-
+from typing import Optional, Any, Sequence
 
-from sqlalchemy import or_, select, and_, Row, RowMapping
+from sqlalchemy import select, Row, RowMapping
 
 from app.models import Skill
 from app.schemas.skill import CreateSkillRequestSchema, GetSkillResponseSchema
@@ -8,10 +9,11 @@ from core.db import Transactional, session
 
 
 class SkillService:
-
-    async def get_skill_list(self, limit: int = 12,
-                             prev: Optional[int] = None, ) -> Sequence[Row | RowMapping | Any]:
-
+    async def get_skill_list(
+        self,
+        limit: int = 12,
+        prev: Optional[int] = None,
+    ) -> Sequence[Row | RowMapping | Any]:
         query = select(Skill)
 
         if prev:
@@ -25,7 +27,7 @@ class SkillService:
         return result.scalars().all()
 
     @Transactional()
-    async def create_list(self, data: CreateSkillRequestSchema):
+    async def create_skill(self, data: CreateSkillRequestSchema):
         skill = Skill(name=data.name)
         session.add(skill)
         return GetSkillResponseSchema(id="1", name=data.name)

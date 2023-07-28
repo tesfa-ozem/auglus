@@ -1,3 +1,4 @@
+# -*- coding: utf-8 -*-
 from typing import Optional, Tuple
 
 import jwt
@@ -12,7 +13,6 @@ from ..schemas import CurrentUser
 
 
 class AuthBackend(AuthenticationBackend):
-    
     async def authenticate(
         self, conn: HTTPConnection
     ) -> Tuple[bool, Optional[CurrentUser]]:

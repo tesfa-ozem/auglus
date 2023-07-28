@@ -1,3 +1,4 @@
+# -*- coding: utf-8 -*-
 from .authentication import AuthenticationMiddleware, AuthBackend
 from .response_log import ResponseLogMiddleware
 from .sqlalchemy import SQLAlchemyMiddleware

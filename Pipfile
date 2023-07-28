@@ -20,6 +20,8 @@ fastapi-sqlalchemy = "*"
 pydantic = "*"
 asyncpg = "*"
 python-dotenv = "*"
+pytest-asyncio = "*"
+pre-commit = "*"
 
 [dev-packages]
 

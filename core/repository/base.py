@@ -1,3 +1,4 @@
+# -*- coding: utf-8 -*-
 from typing import TypeVar, Type, Optional, Generic
 
 from sqlalchemy import select, update, delete

@@ -1,3 +1,4 @@
+# -*- coding: utf-8 -*-
 import inspect
 from typing import Callable
 

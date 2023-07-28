@@ -1,3 +1,4 @@
+# -*- coding: utf-8 -*-
 from fastapi import APIRouter, Response
 
 from api.auth.request.auth import RefreshTokenRequest, VerifyTokenRequest

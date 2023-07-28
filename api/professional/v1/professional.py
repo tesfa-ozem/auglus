@@ -1,26 +1,35 @@
+# -*- coding: utf-8 -*-
 from typing import List
 
 from fastapi import APIRouter, Response, Depends
-from fastapi.exceptions import RequestValidationError, HTTPException
+from fastapi.exceptions import HTTPException
 
 from app.schemas import ExceptionResponseSchema
-from app.schemas.professional import CreateProfessionalRequestSchema, GetProfessionalResponseSchema
+from app.schemas.professional import (
+    CreateProfessionalRequestSchema,
+    GetProfessionalResponseSchema,
+)
 from app.services.professional import ProfessionalService
 from core.fastapi.dependencies import PermissionDependency, AllowAll
 
 professional_router = APIRouter()
 
 
-@professional_router.post("", )
+@professional_router.post(
+    "",
+)
 async def create_professional(request: CreateProfessionalRequestSchema):
     professional_service = ProfessionalService()
     await professional_service.create_user(**request.dict())
     return Response(status_code=200)
 
 
-@professional_router.get("", response_model=List[GetProfessionalResponseSchema],
-                         responses={"400": {"model": ExceptionResponseSchema}},
-                         dependencies=[Depends(PermissionDependency([AllowAll]))], )
+@professional_router.get(
+    "",
+    response_model=List[GetProfessionalResponseSchema],
+    responses={"400": {"model": ExceptionResponseSchema}},
+    dependencies=[Depends(PermissionDependency([AllowAll]))],
+)
 async def fetch_professionals():
     try:
         professional_service = ProfessionalService()

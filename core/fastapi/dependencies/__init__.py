@@ -1,3 +1,4 @@
+# -*- coding: utf-8 -*-
 from .logging import Logging
 from .permission import (
     PermissionDependency,

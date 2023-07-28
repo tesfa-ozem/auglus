@@ -1,3 +1,4 @@
+# -*- coding: utf-8 -*-
 import redis.asyncio as aioredis
 
 from core.config import config
