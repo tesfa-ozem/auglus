@@ -9,8 +9,8 @@ class Config(BaseSettings):
     DEBUG: bool = True
     APP_HOST: str = "0.0.0.0"
     APP_PORT: int = 8000
-    WRITER_DB_URL: str = "postgresql://jkaub:jkaub@localhost/stations"
-    READER_DB_URL: str = "postgresql://jkaub:jkaub@localhost/stations"
+    WRITER_DB_URL: str = "postgresql+asyncpg://tesfa:admin@localhost/taskdb"
+    READER_DB_URL: str = "postgresql+asyncpg://tesfa:admin@localhost/taskdb"
     JWT_SECRET_KEY: str = "fastapi"
     JWT_ALGORITHM: str = "HS256"
     CELERY_BROKER_URL: str = "amqp://user:bitnami@localhost:5672/"
@@ -20,8 +20,8 @@ class Config(BaseSettings):
 
 
 class DevelopmentConfig(Config):
-    WRITER_DB_URL: str = "postgresql://tesfa:admin@localhost/taskdb"
-    READER_DB_URL: str = "postgresql://tesfa:admin@localhost/taskdb"
+    WRITER_DB_URL: str = "postgresql+asyncpg://tesfa:admin@db:5432/taskdb"
+    READER_DB_URL: str = "postgresql+asyncpg://tesfa:admin@db:5432/taskdb"
     REDIS_HOST: str = "redis"
     REDIS_PORT: int = 6379
 
@@ -33,8 +33,8 @@ class LocalConfig(Config):
 
 class ProductionConfig(Config):
     DEBUG: bool = False
-    WRITER_DB_URL: str = "mysql+aiomysql://fastapi:fastapi@localhost:3306/prod"
-    READER_DB_URL: str = "mysql+aiomysql://fastapi:fastapi@localhost:3306/prod"
+    WRITER_DB_URL: str = "postgresql+asyncpg://tesfa:admin@db:5432/taskdb"
+    READER_DB_URL: str = "postgresql+asyncpg://tesfa:admin@db:5432/taskdb"
 
 
 def get_config():
