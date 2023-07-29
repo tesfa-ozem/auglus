@@ -37,7 +37,6 @@ class GetProfessionalResponseSchema(BaseModel):
     available: bool = Field(description="available")
     user_id: int = Field(description="user")
     skill: Optional[List[SkillSchema]] = None
-    task_tracker_id: Optional[int] = None
 
     class Config:
         orm_mode = True

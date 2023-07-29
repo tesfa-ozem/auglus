@@ -3,6 +3,7 @@ import datetime
 from typing import List, Optional
 
 from sqlalchemy import ForeignKey, Table, Column, Integer
+from sqlalchemy.ext.hybrid import hybrid_property
 from sqlalchemy.orm import mapped_column, Mapped, relationship
 
 from app.enums.task import Priority, Status
@@ -73,12 +74,14 @@ class Professional(Base, TimestampMixin):
         secondary=professional_skills_table,
         back_populates="professional",
     )
-    task_tracker_id: Mapped[Optional[int]] = mapped_column(
-        ForeignKey("task_trackers.id"),
-    )
+
     task_tracker: Mapped[Optional[List["TaskTracker"]]] = relationship(
         "TaskTracker", back_populates="professional"
     )
+
+    @hybrid_property
+    def tasks_done(self):
+        return len(self.task_tracker)
 
 
 class Task(Base, TimestampMixin):
@@ -106,6 +109,10 @@ class TaskTracker(Base, TimestampMixin):
     start_time: Mapped[Optional[datetime.datetime]]
     end_date: Mapped[Optional[datetime.datetime]]
     task: Mapped["Task"] = relationship("Task", back_populates="task_tracker")
+    professional_id: Mapped[Optional[int]] = mapped_column(
+        ForeignKey("professionals.id"),
+    )
+
     professional: Mapped["Professional"] = relationship(
         "Professional", back_populates="task_tracker"
     )

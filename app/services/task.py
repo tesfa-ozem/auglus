@@ -90,12 +90,18 @@ class TaskService:
     async def end_task(self, tracker_id: int):
         if not tracker_id:
             raise Exception("No id provided")
+        # fetch the tracker
         query = select(TaskTracker).where(TaskTracker.id == tracker_id)
         result = await session.execute(query)
         task_tracker = result.scalars().first()
+        # fetch task associated to this tracker
         task_query = select(Task).join(Task.task_tracker).where(TaskTracker.id == tracker_id)
         task_result = await session.execute(task_query)
         task = task_result.scalars().first()
+        # fetch the professional
+        p_query = select(Professional).join(Professional.task_tracker).where(TaskTracker.id == tracker_id)
+        p_result = await session.execute(p_query)
+        p = p_result.scalars().first()
         if not task_tracker:
             raise HTTPException(status_code=404, detail="Task not found")
 
@@ -103,6 +109,7 @@ class TaskService:
             raise HTTPException(status_code=403, detail="Task ended")
         task_tracker.end_date = datetime.datetime.now()
         task.status = Status.COMPLETED
+        p.available = True
 
         return task_tracker
 
@@ -129,6 +136,8 @@ class TaskService:
         return task
 
     async def get_next_tasks(self):
+        # Get new tasks
+        # Orders them from High to low priority
         query = select(Task)
         query = (
             query.options(joinedload(Task.skill))
@@ -151,6 +160,7 @@ class TaskService:
 
         for t in tasks:
             skill_ids = [i.id for i in t.skill]
+            # Get professionals with required skills
             professionals = (
                 await professional_service.get_available_professionals(
                     skill_ids
@@ -164,7 +174,6 @@ class TaskService:
             # Assign for only professionals with required skills
             for p_tuple in sorted_professionals:
                 professional = p_tuple[0]
-                # if all(skill in t.skill for skill in professional.skill):
                 t.professional = professional
                 t.status = Status.ASSIGNED
                 professional.available = False
