@@ -41,6 +41,20 @@ async def update_tasks(task_id: int, request: UpdateTaskSchema):
     return response
 
 
+@task_router.patch("/{tracker_id}/start", dependencies=[Depends(PermissionDependency([IsAuthenticated]))])
+async def start_tasks(tracker_id: int, ):
+    task_service = TaskService()
+    response = await task_service.start_task(tracker_id)
+    return response
+
+
+@task_router.patch("/{tracker_id}/end", dependencies=[Depends(PermissionDependency([IsAuthenticated]))])
+async def end_tasks(tracker_id: int, ):
+    task_service = TaskService()
+    response = await task_service.end_task(tracker_id)
+    return response
+
+
 @task_router.get('/userTasks', response_model=List[GetUserTasksSchema],
                  dependencies=[Depends(PermissionDependency([IsAuthenticated]))])
 async def fetch_user_tasks(request: Request):

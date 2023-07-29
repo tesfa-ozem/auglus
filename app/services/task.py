@@ -1,4 +1,5 @@
 # -*- coding: utf-8 -*-
+import datetime
 from typing import Optional, List
 
 from fastapi import HTTPException
@@ -66,6 +67,46 @@ class TaskService:
         return result.scalars().all()
 
     @Transactional()
+    async def start_task(self, tracker_id: int):
+        if not tracker_id:
+            raise Exception("No id provided")
+        query = select(TaskTracker).where(TaskTracker.id == tracker_id)
+        result = await session.execute(query)
+        task_tracker = result.scalars().first()
+        task_query = select(Task).join(Task.task_tracker).where(TaskTracker.id == tracker_id)
+        task_result = await session.execute(task_query)
+        task = task_result.scalars().first()
+        if not task_tracker:
+            raise HTTPException(status_code=404, detail="Task not found")
+
+        if task.status is not Status.NEW:
+            raise HTTPException(status_code=403, detail="Task already started")
+        task_tracker.start_time = datetime.datetime.now()
+        task.status = Status.IN_PROGRESS
+
+        return task_tracker
+
+    @Transactional()
+    async def end_task(self, tracker_id: int):
+        if not tracker_id:
+            raise Exception("No id provided")
+        query = select(TaskTracker).where(TaskTracker.id == tracker_id)
+        result = await session.execute(query)
+        task_tracker = result.scalars().first()
+        task_query = select(Task).join(Task.task_tracker).where(TaskTracker.id == tracker_id)
+        task_result = await session.execute(task_query)
+        task = task_result.scalars().first()
+        if not task_tracker:
+            raise HTTPException(status_code=404, detail="Task not found")
+
+        if task.status == Status.COMPLETED:
+            raise HTTPException(status_code=403, detail="Task ended")
+        task_tracker.end_date = datetime.datetime.now()
+        task.status = Status.COMPLETED
+
+        return task_tracker
+
+    @Transactional()
     async def update_task(self, task_id: int, args):
         if not task_id:
             raise Exception("No id provided")
@@ -125,7 +166,7 @@ class TaskService:
                 professional = p_tuple[0]
                 # if all(skill in t.skill for skill in professional.skill):
                 t.professional = professional
-                t.status = Status.IN_PROGRESS
+                t.status = Status.ASSIGNED
                 professional.available = False
                 tracker = TaskTracker(task=t, professional=professional)
                 session.add(tracker)
