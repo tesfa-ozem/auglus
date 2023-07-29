@@ -7,6 +7,7 @@ from sqlalchemy.orm import joinedload, aliased
 
 from app.enums.task import Priority, Status
 from app.models import Skill, Task, TaskTracker, Professional
+from app.services import UserService
 from app.services.professional import ProfessionalService
 from core.db import Transactional, session
 
@@ -46,8 +47,8 @@ class TaskService:
                              prev: Optional[int] = None, ) -> List[TaskTracker]:
         query = select(TaskTracker)
         query = query.join(TaskTracker.professional)
-
-        query = query.filter(Professional.user_id == user_id)
+        if not await UserService().is_admin(user_id=user_id):
+            query = query.filter(Professional.user_id == user_id)
         query = query.options(
             joinedload(TaskTracker.professional),
             joinedload(TaskTracker.task),
