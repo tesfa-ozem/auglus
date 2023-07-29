@@ -20,8 +20,8 @@ class Config(BaseSettings):
 
 
 class DevelopmentConfig(Config):
-    WRITER_DB_URL: str = "postgresql+asyncpg://tesfa:admin@localhost/taskdb"
-    READER_DB_URL: str = "postgresql+asyncpg://tesfa:admin@localhost/taskdb"
+    WRITER_DB_URL: str = "postgresql+asyncpg://tesfa:admin@db:5432/taskdb"
+    READER_DB_URL: str = "postgresql+asyncpg://tesfa:admin@db:5432/taskdb"
     REDIS_HOST: str = "redis"
     REDIS_PORT: int = 6379
 
@@ -33,8 +33,8 @@ class LocalConfig(Config):
 
 class ProductionConfig(Config):
     DEBUG: bool = False
-    WRITER_DB_URL: str = "postgresql+asyncpg://tesfa:admin@localhost/taskdb"
-    READER_DB_URL: str = "postgresql+asyncpg://tesfa:admin@localhost/taskdb"
+    WRITER_DB_URL: str = "postgresql+asyncpg://tesfa:admin@db:5432/taskdb"
+    READER_DB_URL: str = "postgresql+asyncpg://tesfa:admin@db:5432/taskdb"
 
 
 def get_config():

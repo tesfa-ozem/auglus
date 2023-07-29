@@ -30,6 +30,6 @@ RUN wget https://github.com/jwilder/dockerize/releases/download/$DOCKERIZE_VERSI
     && rm dockerize-linux-amd64-$DOCKERIZE_VERSION.tar.gz
 
 #RUN pipenv shell
-
+ENV ENV dev
 RUN chmod +x /home/docker/api/startup.sh
 ENTRYPOINT /home/docker/api/startup.sh
