@@ -42,6 +42,9 @@ class TaskService:
         result = await session.execute(query)
         return result.scalars().unique()
 
+    async def get_user_tasks(self, ) -> List[TaskTracker]:
+        ...
+
     @Transactional()
     async def update_task(self, task_id: int, args):
         if not task_id:

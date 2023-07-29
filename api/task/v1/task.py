@@ -7,7 +7,7 @@ from starlette.responses import Response
 from app.schemas.task import CreateTaskRequestSchema, GetTaskResponseSchema, UpdateTaskSchema
 from app.services.task import TaskService
 from core.fastapi.dependencies import PermissionDependency, AllowAll, IsAuthenticated, IsAdmin
-
+from fastapi import Request
 task_router = APIRouter()
 
 
@@ -27,7 +27,7 @@ async def create_task(request: CreateTaskRequestSchema):
     # responses={"400": {"model": ExceptionResponseSchema}},
     dependencies=[Depends(PermissionDependency([IsAdmin]))],
 )
-async def fetch_tasks():
+async def fetch_tasks(request: Request):
     task_service = TaskService()
     response = await task_service.get_tasks_list()
     return response
