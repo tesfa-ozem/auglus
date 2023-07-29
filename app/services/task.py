@@ -2,11 +2,11 @@
 from typing import Optional, List
 
 from fastapi import HTTPException
-from sqlalchemy import select, case
+from sqlalchemy.future import select
 from sqlalchemy.orm import joinedload, aliased
 
 from app.enums.task import Priority, Status
-from app.models import Skill, Task, TaskTracker
+from app.models import Skill, Task, TaskTracker, Professional
 from app.services.professional import ProfessionalService
 from core.db import Transactional, session
 
@@ -42,8 +42,27 @@ class TaskService:
         result = await session.execute(query)
         return result.scalars().unique()
 
-    async def get_user_tasks(self, ) -> List[TaskTracker]:
-        ...
+    async def get_user_tasks(self, user_id: int, limit: int = 12,
+                             prev: Optional[int] = None, ) -> List[TaskTracker]:
+        query = select(TaskTracker)
+        query = query.join(TaskTracker.professional)
+
+        query = query.filter(Professional.user_id == user_id)
+        query = query.options(
+            joinedload(TaskTracker.professional),
+            joinedload(TaskTracker.task),
+
+        )
+
+        if prev:
+            query = query.where(TaskTracker.id < prev)
+
+        if limit > 12:
+            limit = 12
+
+        query = query.limit(limit)
+        result = await session.execute(query)
+        return result.scalars().all()
 
     @Transactional()
     async def update_task(self, task_id: int, args):
