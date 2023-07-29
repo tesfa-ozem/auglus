@@ -3,8 +3,24 @@ from typing import Optional, List
 
 from pydantic import BaseModel, Field
 
-from app.models import User
-from app.schemas.task import SkillSchema
+
+class SkillSchema(BaseModel):
+    id: int
+    name: str
+
+    class Config:
+        orm_mode = True
+
+
+class ProfessionalBaseSchema(BaseModel):
+    id: int = Field(description="id")
+    first_name: str = Field(description="first_name")
+    last_name: str = Field(description="last_name")
+    available: bool = Field(description="available")
+    user_id: int = Field(description="user")
+
+    class Config:
+        orm_mode = True
 
 
 class CreateProfessionalRequestSchema(BaseModel):
@@ -21,7 +37,6 @@ class GetProfessionalResponseSchema(BaseModel):
     available: bool = Field(description="available")
     user_id: int = Field(description="user")
     skill: Optional[List[SkillSchema]] = None
-    task_tracker_id: Optional[int] = None
 
     class Config:
         orm_mode = True

@@ -109,12 +109,10 @@ class ProfessionalService:
             data
 
         for i in professionals:
-            if i.task_tracker:
-                work_load_weight = len(i.task_tracker.all()) / (
-                    datetime.datetime.now() - i.created_at
-                )
-                data.append((i, work_load_weight))
-            else:
-                data.append((i, 0))
+            work_load_weight = i.tasks_done / int((
+                datetime.datetime.now() - i.created_at).total_seconds()
+            )
+            data.append((i, work_load_weight))
+
 
         return data

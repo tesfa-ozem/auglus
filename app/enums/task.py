@@ -10,6 +10,7 @@ class Priority(BaseEnum):
 
 class Status(BaseEnum):
     NEW = "New"
+    ASSIGNED = "Assigned"
     IN_PROGRESS = "In Progress"
     COMPLETED = "Completed"
     OVERDUE = "Overdue"
