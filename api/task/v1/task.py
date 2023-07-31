@@ -61,3 +61,10 @@ async def fetch_user_tasks(request: Request):
     task_service = TaskService()
     response = await task_service.get_user_tasks(user_id=request.user.id)
     return response
+
+
+@task_router.post('/assign_task', dependencies=[Depends(PermissionDependency([IsAdmin]))])
+async def assign_task():
+    task_service = TaskService()
+    await task_service.assign_task()
+    return Response(status_code=200, content='Assigning task')

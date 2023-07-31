@@ -17,11 +17,11 @@ class ProfessionalService:
 
     @Transactional()
     async def create_user(
-        self,
-        first_name: str,
-        last_name: str,
-        user_id: int,
-        skill_ids: List[int],
+            self,
+            first_name: str,
+            last_name: str,
+            user_id: int,
+            skill_ids: List[int],
     ):
         try:
             query = select(Skill).where(Skill.id.in_(skill_ids))
@@ -39,9 +39,9 @@ class ProfessionalService:
             raise Exception(f"An unexpected error occurred: {str(e)}")
 
     async def get_professional_list(
-        self,
-        limit: int = 12,
-        prev: Optional[int] = None,
+            self,
+            limit: int = 12,
+            prev: Optional[int] = None,
     ) -> List[Professional]:
         query = select(Professional).options(joinedload(Professional.skill))
         if prev:
@@ -55,8 +55,12 @@ class ProfessionalService:
 
         return result.scalars().unique()
 
+    async def get_professional_by_id(self, id: int):
+        query = select(Professional).where(Professional.id == id)
+        return await session.execute(query).scalars().first()
+
     async def get_available_professionals(
-        self, skill: List[int]
+            self, skill: List[int]
     ) -> List[Professional]:
         query = select(Professional)
         query = (
@@ -97,7 +101,7 @@ class ProfessionalService:
         return professional
 
     async def process_professionals(
-        self, professionals: List[Professional]
+            self, professionals: List[Professional]
     ) -> List[Dict[Professional, float]]:
         """
         - This function sorts the professionals from oldest to newest
@@ -110,9 +114,8 @@ class ProfessionalService:
 
         for i in professionals:
             work_load_weight = i.tasks_done / int((
-                datetime.datetime.now() - i.created_at).total_seconds()
-            )
+                                                          datetime.datetime.now() - i.created_at).total_seconds()
+                                                  )
             data.append((i, work_load_weight))
-
 
         return data

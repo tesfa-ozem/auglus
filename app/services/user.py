@@ -75,5 +75,6 @@ class UserService:
         response = LoginResponseSchema(
             token=TokenHelper.encode(payload={"user_id": user.id}),
             refresh_token=TokenHelper.encode(payload={"sub": "refresh"}),
+            is_admin = user.is_admin
         )
         return response
