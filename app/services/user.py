@@ -18,9 +18,9 @@ class UserService:
         ...
 
     async def get_user_list(
-        self,
-        limit: int = 12,
-        prev: Optional[int] = None,
+            self,
+            limit: int = 12,
+            prev: Optional[int] = None,
     ) -> List[User]:
         query = select(User)
 
@@ -34,9 +34,8 @@ class UserService:
         result = await session.execute(query)
         return result.scalars().all()
 
-    @Transactional()
     async def create_user(
-        self, email: str, password: str, user_name: str
+            self, email: str, password: str, user_name: str
     ) -> None:
         # TODO: validate password
         # if password1 != password2:
@@ -52,6 +51,12 @@ class UserService:
 
         user = User(email=email, password=password, user_name=user_name)
         session.add(user)
+        await session.commit()
+
+        await session.refresh(user)
+        user_id = user.id
+        await session.close()
+        return user_id
 
     async def is_admin(self, user_id: int) -> bool:
         result = await session.execute(select(User).where(User.id == user_id))
@@ -73,8 +78,7 @@ class UserService:
             raise UserNotFoundException
 
         response = LoginResponseSchema(
-            token=TokenHelper.encode(payload={"user_id": user.id}),
+            token=TokenHelper.encode(payload={"user_id": user.id, "is_admin": user.is_admin}),
             refresh_token=TokenHelper.encode(payload={"sub": "refresh"}),
-            is_admin = user.is_admin
         )
         return response

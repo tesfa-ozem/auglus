@@ -57,7 +57,14 @@ class ProfessionalService:
 
     async def get_professional_by_id(self, id: int):
         query = select(Professional).where(Professional.id == id)
-        return await session.execute(query).scalars().first()
+        query = query.options(
+            joinedload(Professional.skill),
+        )
+        result = await session.execute(query)
+        result = result.scalars().first()
+        if not result:
+            raise HTTPException(status_code=404, detail="Not found")
+        return result
 
     async def get_available_professionals(
             self, skill: List[int]

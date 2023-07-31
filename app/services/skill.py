@@ -1,5 +1,5 @@
 # -*- coding: utf-8 -*-
-from typing import Optional, Any, Sequence
+from typing import Optional, Any, Sequence, List
 
 from fastapi import HTTPException
 from sqlalchemy import select, Row, RowMapping
@@ -28,10 +28,11 @@ class SkillService:
         return result.scalars().all()
 
     @Transactional()
-    async def create_skill(self, data: CreateSkillRequestSchema):
-        skill = Skill(name=data.name)
-        session.add(skill)
-        return GetSkillResponseSchema(id="1", name=data.name)
+    async def create_skill(self, data):
+        skills = [{"name": i} for i in data]
+        # query = Skill.insert().values(skills)
+        result = await session.execute(Skill.__table__.insert().values(skills))
+        return result
 
     @Transactional()
     async def update_skills(self, skill_id: int, args):

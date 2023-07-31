@@ -35,8 +35,8 @@ async def get_user_list(
     responses={"400": {"model": ExceptionResponseSchema}},
 )
 async def create_user(request: CreateUserRequestSchema):
-    await UserService().create_user(**request.dict())
-    return {"email": request.email, "user": request.user_name}
+    user_id = await UserService().create_user(**request.dict())
+    return {"email": request.email, "user": request.user_name, "id":user_id}
 
 
 @user_router.post(

@@ -16,7 +16,7 @@ skill_router = APIRouter()
     "",
     dependencies=[Depends(PermissionDependency([AllowAll]))],
 )
-async def create_skill(request: CreateSkillRequestSchema):
+async def create_skill(request: List[str]):
     skill_service = SkillService()
     await skill_service.create_skill(request)
     return Response(status_code=200)
