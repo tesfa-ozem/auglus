@@ -1,211 +1,134 @@
-# FastAPI Boilerplate
+# Auglus FastAPI Project
 
-# Features
-- Async SQLAlchemy session
-- Custom user class
-- Top-level dependency
-- Dependencies for specific permissions
-- Celery
-- Dockerize(Hot reload)
-- Event dispatcher
-- Cache
+This is the README file for the Auglus FastAPI project. The project is a FastAPI-based web application that allows users to manage tasks and track the performance of a workforce. It includes features such as task creation, assignment to professionals, task completion tracking, and basic analytics for task completion rates and workforce performance.
 
-## Run
+## Table of Contents
 
-```python
-python3 main.py --env local|dev|prod --debug
+- [Getting Started](#getting-started)
+  - [Prerequisites](#prerequisites)
+  - [Installation](#installation)
+  - [Configuration](#configuration)
+- [Usage](#usage)
+  - [Running the Application](#running-the-application)
+  - [API Documentation](#api-documentation)
+- [Project Structure](#project-structure)
+- [Contributing](#contributing)
+- [License](#license)
+
+## Getting Started
+
+### Prerequisites
+
+Before running the project, ensure you have the following installed:
+
+- Python 3.10 or higher
+- PostgreSQL database server
+- Docker (optional, for running in containers)
+
+
+### Installation
+
+1. Clone the repository to your local machine:
+
+   ```bash
+   git clone https://github.com/your-username/auglus-fastapi.git
+   ```
+
+2. Navigate to the project directory:
+
+   ```bash
+   cd auglus-fastapi
+   ```
+
+3. Install `pipenv` if you haven't already:
+
+   ```bash
+   pip install pipenv
+   ```
+
+4. Install the project dependencies using `pipenv`:
+
+   ```bash
+   pipenv install
+   ```
+
+5. Activate the virtual environment:
+
+   ```bash
+   pipenv shell
+   ```
+
+Now, you're ready to run the application and perform other tasks within the virtual environment managed by `pipenv`.
+
+### Configuration
+
+The project configuration is stored in the `config.py` file. Make sure to update the configuration based on your environment and database settings before running the application.
+
+## Usage
+
+### Running Migrations
+To create tables on the database run the following command
+```bash
+alembic upgrade head
 ```
 
-## SQLAlchemy for asyncio context
+### Running the Application
 
-```python
-from core.db import Transactional, session
+To run the application locally, execute the following command:
 
-
-@Transactional()
-async def create_user(self):
-    session.add(User(email="padocon@naver.com"))
+```bash
+python main.py --env local --debug
 ```
 
-Do not use explicit `commit()`. `Transactional` class automatically do.
+The application will start, and you can access it at `http://localhost:8000`.
 
-### Standalone session
+### API Documentation
 
-According to the current settings, the session is set through middleware.
-
-However, it doesn't go through middleware in tests or background tasks.
-
-So you need to use the `@standalone_session` decorator.
-
-```python
-from core.db import standalone_session
-
-
-@standalone_session
-def test_something():
-    ...
+The API documentation is automatically generated using FastAPI's built-in Swagger UI. You can access the API documentation at `http://localhost:8000/docs`.
+### Running with docker
+To run the application with docker edit the env variables in the docker
+files. Then run the following command
+```bash
+docker-compose up --build -d
 ```
 
-### Multiple databases
+## Project Structure
 
-Go to `core/config.py` and edit `WRITER_DB_URL` and `READER_DB_URL` in the config class.
+The project is structured as follows:
 
-
-If you need additional logic to use the database, refer to the `get_bind()` method of `RoutingClass`.
-
-## Custom user for authentication
-
-```python
-from fastapi import Request
-
-
-@home_router.get("/")
-def home(request: Request):
-    return request.user.id
+```
+auglus-fastapi/
+|--api/
+|   |-- auth/
+|   |-- home/
+|   |-- professional/
+|   |-- skill/
+|   |-- task/
+|   |-- user/
+|-- app/
+|   |-- enums/
+|   |-- models/
+|   |-- schemas/
+|   |-- services/
+|   |-- server.py
+|-- core/
+|   |-- db/
+|   |-- config.py
+|-- tests/
+|-- README.md
+|-- pipfile
+|-- .gitignore
+|-- docker
 ```
 
-**Note. you have to pass jwt token via header like `Authorization: Bearer 1234`**
+- `app`: Contains the application's business logic, including routers for handling HTTP requests, services for handling business logic, and models representing database tables.
+- `core`: Contains core functionality, such as database setup and configuration.
+- `tests`: Contains unit tests for the application.
+- `main.py`: The entry point of the FastAPI application.
+- `db`: Database abstraction.
+- `config.py`: Configuration settings for the application.
+- `docker`: Docker related settings and config.
 
-Custom user class automatically decodes header token and store user information into `request.user`
+## License
 
-If you want to modify custom user class, you have to update below files.
-
-1. `core/fastapi/schemas/current_user.py`
-2. `core/fastapi/middlewares/authentication.py`
-
-### CurrentUser
-
-```python
-class CurrentUser(BaseModel):
-    id: int = Field(None, description="ID")
-```
-
-Simply add more fields based on your needs.
-
-### AuthBackend
-
-```python
-current_user = CurrentUser()
-```
-
-After line 18, assign values that you added on `CurrentUser`.
-
-## Top-level dependency
-
-**Note. Available from version 0.62 or higher.**
-
-Set a callable function when initialize FastAPI() app through `dependencies` argument.
-
-Refer `Logging` class inside of `core/fastapi/dependencies/logging.py`
-
-## Dependencies for specific permissions
-
-Permissions `IsAdmin`, `IsAuthenticated`, `AllowAll` have already been implemented.
-
-```python
-from core.fastapi.dependencies import (
-    PermissionDependency,
-    IsAdmin,
-)
-
-
-user_router = APIRouter()
-
-
-@user_router.get(
-    "",
-    response_model=List[GetUserListResponseSchema],
-    response_model_exclude={"id"},
-    responses={"400": {"model": ExceptionResponseSchema}},
-    dependencies=[Depends(PermissionDependency([IsAdmin]))],  # HERE
-)
-async def get_user_list(
-    limit: int = Query(10, description="Limit"),
-    prev: int = Query(None, description="Prev ID"),
-):
-    pass
-```
-Insert permission through `dependencies` argument.
-
-If you want to make your own permission, inherit `BasePermission` and implement `has_permission()` function.
-
-**Note. In order to use swagger's authorize function, you must put `PermissionDependency` as an argument of `dependencies`.**
-
-## Event dispatcher
-
-Refer the README of https://github.com/teamhide/fastapi-event
-
-## Cache
-
-### Caching by prefix
-```python
-from core.helpers.cache import Cache
-
-
-@Cache.cached(prefix="get_user", ttl=60)
-async def get_user():
-    ...
-```
-
-### Caching by tag
-```python
-from core.helpers.cache import Cache, CacheTag
-
-
-@Cache.cached(tag=CacheTag.GET_USER_LIST, ttl=60)
-async def get_user():
-    ...
-```
-
-Use the `Cache` decorator to cache the return value of a function.
-
-Depending on the argument of the function, caching is stored with a different value through internal processing.
-
-### Custom Key builder
-
-```python
-from core.helpers.cache.base import BaseKeyMaker
-
-
-class CustomKeyMaker(BaseKeyMaker):
-    async def make(self, function: Callable, prefix: str) -> str:
-        ...
-```
-
-If you want to create a custom key, inherit the BaseKeyMaker class and implement the make() method.
-
-### Custom Backend
-
-```python
-from core.helpers.cache.base import BaseBackend
-
-
-class RedisBackend(BaseBackend):
-    async def get(self, key: str) -> Any:
-        ...
-
-    async def set(self, response: Any, key: str, ttl: int = 60) -> None:
-        ...
-
-    async def delete_startswith(self, value: str) -> None:
-        ...
-```
-
-If you want to create a custom key, inherit the BaseBackend class and implement the `get()`, `set()`, `delete_startswith()` method.
-
-Pass your custom backend or keymaker as an argument to init. (`/app/server.py`)
-
-```python
-def init_cache() -> None:
-    Cache.init(backend=RedisBackend(), key_maker=CustomKeyMaker())
-```
-
-### Remove all cache by prefix/tag
-
-```python
-from core.helpers.cache import Cache, CacheTag
-
-
-await Cache.remove_by_prefix(prefix="get_user_list")
-await Cache.remove_by_tag(tag=CacheTag.GET_USER_LIST)
-```
+This project is licensed under the [MIT License](LICENSE). Feel free to use, modify, and distribute it as per the terms of the license.
