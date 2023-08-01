@@ -10,7 +10,7 @@ from app.schemas.professional import (
     GetProfessionalResponseSchema, UpdateProfessionalSchema,
 )
 from app.services.professional import ProfessionalService
-from core.fastapi.dependencies import PermissionDependency, AllowAll
+from core.fastapi.dependencies import PermissionDependency, AllowAll, IsAdmin, IsAuthenticated
 from fastapi import Request
 
 professional_router = APIRouter()
@@ -29,7 +29,7 @@ async def create_professional(request: Request, args: CreateProfessionalRequestS
     "",
     response_model=List[GetProfessionalResponseSchema],
     responses={"400": {"model": ExceptionResponseSchema}},
-    dependencies=[Depends(PermissionDependency([AllowAll]))],
+    dependencies=[Depends(PermissionDependency([IsAdmin]))],
 )
 async def fetch_professionals(request: Request):
     try:
@@ -42,6 +42,15 @@ async def fetch_professionals(request: Request):
         # You can return a custom error response
         error_msg = "Validation error: " + str(e)
         raise HTTPException(status_code=422, detail=error_msg)
+
+
+@professional_router.get("/{professional_id}",
+                         response_model=GetProfessionalResponseSchema,
+                         dependencies=[Depends(PermissionDependency([IsAuthenticated]))],)
+async def fetch_professional_by_id(professional_id: int):
+    professional_service = ProfessionalService()
+    response = await professional_service.get_professional_by_id(professional_id)
+    return response
 
 
 @professional_router.patch("/{professional_id}", )

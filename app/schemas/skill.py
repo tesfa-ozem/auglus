@@ -11,7 +11,7 @@ class GetSkillResponseSchema(BaseModel):
     name: str = Field(..., description="name")
 
     class Config:
-        orm_mode = True
+        from_attributes = True
 
 
 class UpdateSkillSchema(CreateSkillRequestSchema):

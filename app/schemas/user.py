@@ -8,7 +8,7 @@ class GetUserListResponseSchema(BaseModel):
     user_name: str = Field(..., description="Username")
 
     class Config:
-        orm_mode = True
+        from_attributes = True
 
 
 class CreateUserRequestSchema(BaseModel):
@@ -22,7 +22,7 @@ class CreateUserResponseSchema(BaseModel):
     user_name: str = Field(..., description="Username")
 
     class Config:
-        orm_mode = True
+        from_attributes = True
 
 
 class LoginResponseSchema(BaseModel):
