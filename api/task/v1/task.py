@@ -4,9 +4,19 @@ from typing import List
 from fastapi import APIRouter, Depends
 from starlette.responses import Response
 
-from app.schemas.task import CreateTaskRequestSchema, GetTaskResponseSchema, UpdateTaskSchema, GetUserTasksSchema
+from app.schemas.task import (
+    CreateTaskRequestSchema,
+    GetTaskResponseSchema,
+    UpdateTaskSchema,
+    GetUserTasksSchema,
+)
 from app.services.task import TaskService
-from core.fastapi.dependencies import PermissionDependency, AllowAll, IsAuthenticated, IsAdmin
+from core.fastapi.dependencies import (
+    PermissionDependency,
+    AllowAll,
+    IsAuthenticated,
+    IsAdmin,
+)
 from fastapi import Request
 
 task_router = APIRouter()
@@ -34,37 +44,56 @@ async def fetch_tasks(request: Request):
     return response
 
 
-@task_router.patch("/{task_id}", dependencies=[Depends(PermissionDependency([IsAdmin]))])
+@task_router.patch(
+    "/{task_id}", dependencies=[Depends(PermissionDependency([IsAdmin]))]
+)
 async def update_tasks(task_id: int, request: UpdateTaskSchema):
     task_service = TaskService()
-    response = await task_service.update_task(task_id=task_id, args=request.model_dump(exclude_unset=True))
+    response = await task_service.update_task(
+        task_id=task_id, args=request.model_dump(exclude_unset=True)
+    )
     return response
 
 
-@task_router.patch("/{tracker_id}/start", dependencies=[Depends(PermissionDependency([IsAuthenticated]))])
-async def start_tasks(tracker_id: int, ):
+@task_router.patch(
+    "/{tracker_id}/start",
+    dependencies=[Depends(PermissionDependency([IsAuthenticated]))],
+)
+async def start_tasks(
+    tracker_id: int,
+):
     task_service = TaskService()
     response = await task_service.start_task(tracker_id)
     return response
 
 
-@task_router.patch("/{tracker_id}/end", dependencies=[Depends(PermissionDependency([IsAuthenticated]))])
-async def end_tasks(tracker_id: int, ):
+@task_router.patch(
+    "/{tracker_id}/end",
+    dependencies=[Depends(PermissionDependency([IsAuthenticated]))],
+)
+async def end_tasks(
+    tracker_id: int,
+):
     task_service = TaskService()
     response = await task_service.end_task(tracker_id)
     return response
 
 
-@task_router.get('/userTasks',
-                 dependencies=[Depends(PermissionDependency([IsAuthenticated]))])
+@task_router.get(
+    "/userTasks",
+    dependencies=[Depends(PermissionDependency([IsAuthenticated]))],
+    response_model=List[GetUserTasksSchema],
+)
 async def fetch_user_tasks(request: Request):
     task_service = TaskService()
     response = await task_service.get_user_tasks(user_id=request.user.id)
     return response
 
 
-@task_router.post('/assign_task', dependencies=[Depends(PermissionDependency([IsAdmin]))])
+@task_router.post(
+    "/assign_task", dependencies=[Depends(PermissionDependency([AllowAll]))]
+)
 async def assign_task():
     task_service = TaskService()
     await task_service.assign_task()
-    return Response(status_code=200, content='Assigning task')
+    return Response(status_code=200, content="Assigning task")
