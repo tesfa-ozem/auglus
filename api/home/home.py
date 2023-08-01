@@ -31,5 +31,5 @@ async def average_task_completion_time():
 @home_router.get("/workforce_performance")
 async def workforce_performance():
     analytics = AnalyticsService()
-    result = await analytics.calculate_average_task_completion_time()
+    result = await analytics.calculate_workforce_performance()
     return result
