@@ -9,7 +9,7 @@ class SkillSchema(BaseModel):
     name: str
 
     class Config:
-        orm_mode = True
+        from_attributes = True
 
 
 class ProfessionalBaseSchema(BaseModel):
@@ -20,7 +20,7 @@ class ProfessionalBaseSchema(BaseModel):
     user_id: int = Field(description="user")
 
     class Config:
-        orm_mode = True
+        from_attributes = True
 
 
 class CreateProfessionalRequestSchema(BaseModel):
@@ -39,7 +39,7 @@ class GetProfessionalResponseSchema(BaseModel):
     skill: Optional[List[SkillSchema]] = None
 
     class Config:
-        orm_mode = True
+        from_attributes = True
 
 
 class UpdateProfessionalSchema(BaseModel):

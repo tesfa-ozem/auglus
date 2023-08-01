@@ -2,6 +2,7 @@
 from typing import List
 
 from fastapi import FastAPI, Request, Depends
+from fastapi.exceptions import ResponseValidationError
 from fastapi.middleware import Middleware
 from fastapi.middleware.cors import CORSMiddleware
 from fastapi.responses import JSONResponse
@@ -33,6 +34,19 @@ def init_listeners(app_: FastAPI) -> None:
             status_code=exc.code,
             content={"error_code": exc.error_code, "message": exc.message},
         )
+
+
+async def handle_response_validation_error(request: Request, exc: ResponseValidationError):
+    # Create a custom error response
+    error_message = "An error occurred while processing the response data."
+    error_detail = str(exc)
+    error_response = {
+        "detail": error_message,
+        "error": error_detail,
+    }
+
+    # Return the custom error response
+    return JSONResponse(content=error_response, status_code=500)
 
 
 def on_auth_error(request: Request, exc: Exception):

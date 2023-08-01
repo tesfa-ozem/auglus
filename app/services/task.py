@@ -4,7 +4,7 @@ from typing import Optional, List
 
 from fastapi import HTTPException
 from sqlalchemy.future import select
-from sqlalchemy.orm import joinedload, aliased
+from sqlalchemy.orm import joinedload, aliased, selectinload
 
 from app.enums.task import Priority, Status
 from app.models import Skill, Task, TaskTracker, Professional
@@ -51,9 +51,8 @@ class TaskService:
         if not await UserService().is_admin(user_id=user_id):
             query = query.filter(Professional.user_id == user_id)
         query = query.options(
-            joinedload(TaskTracker.professional),
-            joinedload(TaskTracker.task),
-
+            selectinload(TaskTracker.task),
+            selectinload(TaskTracker.professional)
         )
 
         if prev:
@@ -64,7 +63,7 @@ class TaskService:
 
         query = query.limit(limit)
         result = await session.execute(query)
-        return result.scalars().all()
+        return result.scalars().unique().all()
 
     @Transactional()
     async def start_task(self, tracker_id: int):
@@ -79,7 +78,7 @@ class TaskService:
         if not task_tracker:
             raise HTTPException(status_code=404, detail="Task not found")
 
-        if task.status is not Status.NEW:
+        if task.status is not Status.ASSIGNED:
             raise HTTPException(status_code=403, detail="Task already started")
         task_tracker.start_time = datetime.datetime.now()
         task.status = Status.IN_PROGRESS

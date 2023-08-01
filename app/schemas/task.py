@@ -12,13 +12,13 @@ SkillSchema = ForwardRef("SkillSchema")
 
 
 class BaseTaskSchema(BaseModel):
-    id: int
-    name: str
-    priority: Priority
-    status: Status
+    id: Optional[int]
+    name: Optional[str]
+    priority: Optional[Priority]
+    status: Optional[Status]
 
     class Config:
-        orm_mode = True
+        from_attributes = True
 
 
 class SkillSchema(BaseModel):
@@ -26,7 +26,7 @@ class SkillSchema(BaseModel):
     name: str
 
     class Config:
-        orm_mode = True
+        from_attributes = True
 
 
 # class Skill(BaseModel):
@@ -65,8 +65,8 @@ class GetUserTasksSchema(BaseModel):
     id: int
     start_time: Optional[datetime.datetime]
     end_date: Optional[datetime.datetime]
-    task: BaseTaskSchema
+    task: Optional[BaseTaskSchema]
     professional: ProfessionalBaseSchema
 
     class Config:
-        orm_mode = True
+        from_attributes = True

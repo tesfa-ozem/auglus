@@ -55,7 +55,7 @@ async def end_tasks(tracker_id: int, ):
     return response
 
 
-@task_router.get('/userTasks', response_model=List[GetUserTasksSchema],
+@task_router.get('/userTasks',
                  dependencies=[Depends(PermissionDependency([IsAuthenticated]))])
 async def fetch_user_tasks(request: Request):
     task_service = TaskService()
