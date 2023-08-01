@@ -18,18 +18,18 @@ async def home():
 async def tasks_completion_rate():
     analytics = AnalyticsService()
     result = await analytics.calculate_task_completion_rate()
-    return {"task_completion_rate": result}, 200
+    return {"task_completion_rate": result}
 
 
 @home_router.get("/average_task_completion_time")
 async def average_task_completion_time():
     analytics = AnalyticsService()
     result = await analytics.calculate_average_task_completion_time()
-    return {"average_completion_time": result}, 200
+    return {"average_completion_time": result}
 
 
 @home_router.get("/workforce_performance")
 async def workforce_performance():
     analytics = AnalyticsService()
     result = await analytics.calculate_average_task_completion_time()
-    return result, 200
+    return result
