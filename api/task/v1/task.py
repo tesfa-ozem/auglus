@@ -15,7 +15,6 @@ from core.fastapi.dependencies import (
     PermissionDependency,
     AllowAll,
     IsAuthenticated,
-    IsAdmin,
 )
 from fastapi import Request
 
@@ -36,7 +35,7 @@ async def create_task(request: CreateTaskRequestSchema):
     "/all",
     response_model=List[GetTaskResponseSchema],
     # responses={"400": {"model": ExceptionResponseSchema}},
-    dependencies=[Depends(PermissionDependency([IsAdmin]))],
+    dependencies=[Depends(PermissionDependency([IsAuthenticated]))],
 )
 async def fetch_tasks(request: Request):
     task_service = TaskService()
@@ -45,7 +44,8 @@ async def fetch_tasks(request: Request):
 
 
 @task_router.patch(
-    "/{task_id}", dependencies=[Depends(PermissionDependency([IsAdmin]))]
+    "/{task_id}",
+    dependencies=[Depends(PermissionDependency([IsAuthenticated]))],
 )
 async def update_tasks(task_id: int, request: UpdateTaskSchema):
     task_service = TaskService()
